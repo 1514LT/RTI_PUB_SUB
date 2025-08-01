@@ -1,0 +1,7 @@
+struct Target {
+    int32 index;
+    string buff;
+};
+struct TargetReply {
+  int32 flag;
+};
