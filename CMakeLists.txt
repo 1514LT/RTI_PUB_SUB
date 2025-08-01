@@ -19,10 +19,10 @@ include_directories(
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/include/ndds
     ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/include/ndds/hpp
 )
-
+add_compile_options(-Wno-class-memaccess)
 # 预处理定义
 add_definitions(-DRTI_UNIX -DRTI_LINUX -DRTI_64BIT)
-
+add_definitions(-DSHM)
 # 库目录
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/lib/x64Linux3gcc4.8.2)
 

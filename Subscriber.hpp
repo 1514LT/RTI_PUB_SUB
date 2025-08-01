@@ -13,6 +13,10 @@
 #include "DataTypes.hpp"
 #include "application.hpp"
 
+#include <dds/dds.hpp>
+#include <rti/rti.hpp>
+#include <rti/core/policy/CorePolicy.hpp>
+
 class BaseReaderHolder
 {
 private:

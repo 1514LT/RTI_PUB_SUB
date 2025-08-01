@@ -9,6 +9,10 @@
 #include <rti/config/Logger.hpp>
 #include "DataTypes.hpp"
 
+#include <dds/dds.hpp>
+#include <rti/rti.hpp>
+#include <rti/core/policy/CorePolicy.hpp>
+
 class BaseWriterHolder
 {
 private:

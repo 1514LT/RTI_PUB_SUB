@@ -27,7 +27,22 @@ bool Publisher::initPubType(std::string topicName)
 
 bool Publisher::init(int domaimId)
 {
-  m_participant = new dds::domain::DomainParticipant(domaimId);
+  auto participant_qos = dds::domain::qos::DomainParticipantQos();
+  #ifdef SHM
+  std::cout << "SHM" << std::endl;
+  participant_qos << rti::core::policy::TransportBuiltin::Shmem();
+  rti::core::policy::Property shm_properties;
+  shm_properties.set({
+    {"dds.transport.builtin.shmem.received_message_count_max", "64"},
+    {"dds.transport.builtin.shmem.receive_buffer_size", "1048576"} }
+    );
+  participant_qos << shm_properties;
+  #endif
+  #ifdef UDP_V4
+  #endif
+  #ifdef TCP_V4
+  #endif
+  m_participant = new dds::domain::DomainParticipant(domaimId,participant_qos);
   return 
   initPubType<Target>("TargetTopic") &&
   initPubType<TargetReply>("TargetReplyTopic");

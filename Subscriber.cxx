@@ -17,7 +17,18 @@ Subscriber::~Subscriber()
 
 bool Subscriber::init(int domaimId)
 {
-  m_participant = new dds::domain::DomainParticipant(domaimId);
+  auto participant_qos = dds::domain::qos::DomainParticipantQos();
+  #ifdef SHM
+  std::cout << "SHM" << std::endl;
+  participant_qos << rti::core::policy::TransportBuiltin::Shmem();
+  rti::core::policy::Property shm_properties;
+  shm_properties.set({
+    {"dds.transport.builtin.shmem.received_message_count_max", "64"},
+    {"dds.transport.builtin.shmem.receive_buffer_size", "1048576"} }
+    );
+  participant_qos << shm_properties;
+  #endif
+  m_participant = new dds::domain::DomainParticipant(domaimId,participant_qos);
   std::future<bool> result = std::async(std::launch::async,&Subscriber::initSubType<Target>,this,"TargetTopic");
   std::future<bool> result2 = std::async(std::launch::async,&Subscriber::initSubType<TargetReply>,this,"TargetReplyTopic");
   return result.get() && result2.get();
