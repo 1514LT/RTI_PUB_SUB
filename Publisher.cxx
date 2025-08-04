@@ -39,8 +39,22 @@ bool Publisher::init(int domaimId)
   participant_qos << shm_properties;
   #endif
   #ifdef UDP_V4
+  std::cout << "UDP_V4" << std::endl;
+  participant_qos << rti::core::policy::TransportBuiltin::UDPv4();
   #endif
   #ifdef TCP_V4
+  std::cout << "TCP_V4" << std::endl;
+  participant_qos << rti::core::policy::TransportBuiltin::None();
+  rti::core::policy::Property tcp_client_props;
+  tcp_client_props.set({
+    {"dds.transport.load_plugins", "dds.transport.TCPv4.tcp1"},
+    {"dds.transport.TCPv4.tcp1.library", "nddstransporttcp"},
+    {"dds.transport.TCPv4.tcp1.create_function", "NDDS_Transport_TCPv4_create"},
+    {"dds.transport.TCPv4.tcp1.parent.classid", "NDDS_TRANSPORT_CLASSID_TCPV4_LAN"},
+    {"dds.transport.TCPv4.tcp1.server_bind_port", "7401"},
+  });
+  /*export NDDS_DISCOVERY_PEERS="192.168.5.165:7400,192.168.5.165:7401"*/
+  participant_qos << tcp_client_props;
   #endif
   m_participant = new dds::domain::DomainParticipant(domaimId,participant_qos);
   return 

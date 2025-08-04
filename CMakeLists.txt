@@ -22,7 +22,7 @@ include_directories(
 add_compile_options(-Wno-class-memaccess)
 # 预处理定义
 add_definitions(-DRTI_UNIX -DRTI_LINUX -DRTI_64BIT)
-add_definitions(-DSHM)
+add_definitions(-DUDP_V4)
 # 库目录
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/lib/x64Linux3gcc4.8.2)
 
@@ -40,6 +40,7 @@ add_library(DateTypes_common SHARED ${COMMON_SOURCES})
 add_executable(pub MainPub.cxx Publisher.cxx)
 target_link_libraries(pub 
     DateTypes_common
+    nddstransporttcp
     nddscpp2
     nddsc
     nddscore
@@ -50,6 +51,7 @@ target_link_libraries(pub
 add_executable(sub MainSub.cxx Subscriber.cxx)
 target_link_libraries(sub 
     DateTypes_common
+    nddstransporttcp
     nddscpp2
     nddsc
     nddscore
