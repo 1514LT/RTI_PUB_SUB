@@ -12,7 +12,14 @@ Publisher::~Publisher()
     delete m_participant;
     m_participant = nullptr;
   }
-  dds::domain::DomainParticipant::finalize_participant_factory();
+}
+bool Publisher::addLargePacketTopic(const std::string& topicName)
+{
+  return initPubType<largePacket>(topicName);
+}
+bool Publisher::addSmallPacketTopic(const std::string& topicName)
+{
+  return initPubType<smallPacket>(topicName);
 }
 
 template <typename T>
@@ -22,7 +29,22 @@ bool Publisher::initPubType(std::string topicName)
   dds::pub::Publisher publisher(*m_participant);
   auto dataWriter = std::make_shared<WriterHolder<T>>(publisher, topic);
   m_writers[topicName] = dataWriter;
-  return true;
+  // /*
+  dds::pub::DataWriter<T>& writer = dataWriter->getWriter();
+  const int max_wait_seconds = 10;
+  for (int i = 0; i < max_wait_seconds; ++i) 
+  {
+    dds::core::status::PublicationMatchedStatus status = writer.publication_matched_status();
+    if (status.current_count() > 0) 
+    {
+      return true;
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+  std::cout << "time out" << std::endl;
+  return false;
+  // */
+ return true;
 }
 
 bool Publisher::init(int domaimId)
@@ -57,9 +79,7 @@ bool Publisher::init(int domaimId)
   participant_qos << tcp_client_props;
   #endif
   m_participant = new dds::domain::DomainParticipant(domaimId,participant_qos);
-  return 
-  initPubType<Target>("TargetTopic") &&
-  initPubType<TargetReply>("TargetReplyTopic");
+  return m_participant != nullptr;
 }
 
 void Publisher::waitForAcknowledgments()

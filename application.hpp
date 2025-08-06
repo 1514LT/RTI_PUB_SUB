@@ -2,18 +2,31 @@
 #define APPLICATION_HPP
 #include <csignal>
 #include <iostream>
-namespace app{
+#include <chrono>
+#include <ctime>
+#include <iomanip>
+#include <sstream>
+#include "string.h"
+#include <thread>
+#include <string>
+namespace app
+{
   extern bool shutdown_requested;
-  inline void stop_handler(int)
-  {
-    shutdown_requested = true;
-    std::cout << "preparing to shut down..." << std::endl;
-  }
+  extern bool throughput_flag;
+  extern bool delay_flag;
+  extern int test_time;
+  void stop_handler(int);
+  void setup_signal_handlers();
+  // 获取当前毫秒时间戳
+  long long getCurrentMilliseconds();
+  // 获取当前微秒时间戳
+  long long getCurrentMicroseconds();
+  // 传入毫秒时间戳，打印格式化时间
+  void printTimeFromMilliseconds(long long milliseconds);
+  // 传入微秒时间戳，打印格式化时间
+  void printTimeFromMicroseconds(long long microseconds);
+  int handlOption(int argc,const char* argv[]);
+  void timer(int minutes);
 
-  inline void setup_signal_handlers()
-  {
-      signal(SIGINT, stop_handler);
-      signal(SIGTERM, stop_handler);
-  }
-}
+}  // namespace app
 #endif

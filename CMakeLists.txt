@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 
 # 编译选项
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -Wall -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -Wall -std=c++11 -Wno-deprecated-declarations")
 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -m64 -no-pie -rdynamic")
 
 
@@ -31,29 +31,41 @@ set(COMMON_SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/type/DataTypes.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/type/DataTypesImpl.cxx
     ${CMAKE_CURRENT_SOURCE_DIR}/type/DataTypesImplPlugin.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/application.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/Publisher.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/Subscriber.cxx
+    ${CMAKE_CURRENT_SOURCE_DIR}/MultiDomainNode.cxx
 )
 
 # 通用对象库
 add_library(DateTypes_common SHARED ${COMMON_SOURCES})
 
 # Publisher可执行文件
-add_executable(pub MainPub.cxx Publisher.cxx)
-target_link_libraries(pub 
+add_executable(NodeA NodeA.cxx)
+target_link_libraries(NodeA 
     DateTypes_common
     nddstransporttcp
     nddscpp2
     nddsc
     nddscore
-    dl m pthread rt
+    m 
+    pthread
+    rt
+    dl
 )
 
 # Subscriber可执行文件（使用WaitSet）
-add_executable(sub MainSub.cxx Subscriber.cxx)
-target_link_libraries(sub 
+add_executable(NodeB NodeB.cxx)
+target_link_libraries(NodeB 
     DateTypes_common
     nddstransporttcp
     nddscpp2
     nddsc
     nddscore
-    dl m pthread rt
+    m 
+    pthread 
+    rt 
+    dl
 )
+target_link_options(NodeA PRIVATE "-Wl,--no-as-needed")
+target_link_options(NodeB PRIVATE "-Wl,--no-as-needed")

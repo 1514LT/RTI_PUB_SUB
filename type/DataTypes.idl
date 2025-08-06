@@ -1,7 +1,14 @@
-struct Target {
-    long index;
-    string buff;
+struct largePacket {
+  long long sequence_number; //包序列号
+  long long timestamp_ns; //时间戳
+  char payload[1484]; // 总大小1500字节
 };
-struct TargetReply {
-  long flag;
-};
+struct smallPacket {
+  long long sequence_number; //包序列号
+  long long timestamp_ns; //时间戳
+  char payload0 [4]; // 数据字段0
+  char payload1 [4]; // 数据字段1
+  char payload2 [4]; // 数据字段2
+  char payload3 [4]; // 数据字段3
+  char payload4 [4]; // 数据字段4
+};//

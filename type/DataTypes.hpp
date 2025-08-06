@@ -9,8 +9,8 @@ For more information, type 'rtiddsgen -help' at a command shell
 or consult the RTI Connext manual.
 */
 
-#ifndef DataTypes_470592838_hpp
-#define DataTypes_470592838_hpp
+#ifndef DataTypes_470593198_hpp
+#define DataTypes_470593198_hpp
 
 #include <iosfwd>
 #include "DataTypesImpl.h"
@@ -54,143 +54,183 @@ or consult the RTI Connext manual.
 #define NDDSUSERDllExport __declspec(dllexport)
 #endif
 
-class NDDSUSERDllExport Target {
+class NDDSUSERDllExport largePacket {
 
   public:
-    Target();
-    Target(
-        int32_t index,
-        const dds::core::string& buff);
+    largePacket();
+    largePacket(
+        rti::core::int64 sequence_number,
+        rti::core::int64 timestamp_ns,
+        const dds::core::array<char, 1484>& payload);
 
     #ifdef RTI_CXX11_RVALUE_REFERENCES
     #ifndef RTI_CXX11_NO_IMPLICIT_MOVE_OPERATIONS
-    Target (Target&& other_) = default;
-    Target& operator=(Target&&  other_) = default;
-    Target& operator=(const Target&) = default;
-    Target(const Target&) = default;
+    largePacket (largePacket&& other_) = default;
+    largePacket& operator=(largePacket&&  other_) = default;
+    largePacket& operator=(const largePacket&) = default;
+    largePacket(const largePacket&) = default;
     #else
-    Target(Target&& other_) OMG_NOEXCEPT;  
-    Target& operator=(Target&&  other_) OMG_NOEXCEPT;
+    largePacket(largePacket&& other_) OMG_NOEXCEPT;  
+    largePacket& operator=(largePacket&&  other_) OMG_NOEXCEPT;
     #endif
     #endif 
 
-    int32_t index() const OMG_NOEXCEPT;
-    void index(int32_t value);
+    rti::core::int64 sequence_number() const OMG_NOEXCEPT;
+    void sequence_number(rti::core::int64 value);
 
-    dds::core::string& buff() OMG_NOEXCEPT; 
-    const dds::core::string& buff() const OMG_NOEXCEPT;
-    void buff(const dds::core::string& value);
+    rti::core::int64 timestamp_ns() const OMG_NOEXCEPT;
+    void timestamp_ns(rti::core::int64 value);
 
-    bool operator == (const Target& other_) const;
-    bool operator != (const Target& other_) const;
+    dds::core::array<char, 1484>& payload() OMG_NOEXCEPT; 
+    const dds::core::array<char, 1484>& payload() const OMG_NOEXCEPT;
+    void payload(const dds::core::array<char, 1484>& value);
 
-    void swap(Target& other_) OMG_NOEXCEPT ;
+    bool operator == (const largePacket& other_) const;
+    bool operator != (const largePacket& other_) const;
+
+    void swap(largePacket& other_) OMG_NOEXCEPT ;
 
   private:
 
-    int32_t m_index_;
-    dds::core::string m_buff_;
+    rti::core::int64 m_sequence_number_;
+    rti::core::int64 m_timestamp_ns_;
+    dds::core::array<char, 1484> m_payload_;
 
 };
 
-inline void swap(Target& a, Target& b)  OMG_NOEXCEPT 
+inline void swap(largePacket& a, largePacket& b)  OMG_NOEXCEPT 
 {
     a.swap(b);
 }
 
-NDDSUSERDllExport std::ostream& operator << (std::ostream& o,const Target& sample);
+NDDSUSERDllExport std::ostream& operator << (std::ostream& o,const largePacket& sample);
 
-class NDDSUSERDllExport TargetReply {
+class NDDSUSERDllExport smallPacket {
 
   public:
-    TargetReply();
-    explicit TargetReply(
-        int32_t flag);
+    smallPacket();
+    smallPacket(
+        rti::core::int64 sequence_number,
+        rti::core::int64 timestamp_ns,
+        const dds::core::array<char, 4>& payload0,
+        const dds::core::array<char, 4>& payload1,
+        const dds::core::array<char, 4>& payload2,
+        const dds::core::array<char, 4>& payload3,
+        const dds::core::array<char, 4>& payload4);
 
     #ifdef RTI_CXX11_RVALUE_REFERENCES
     #ifndef RTI_CXX11_NO_IMPLICIT_MOVE_OPERATIONS
-    TargetReply (TargetReply&& other_) = default;
-    TargetReply& operator=(TargetReply&&  other_) = default;
-    TargetReply& operator=(const TargetReply&) = default;
-    TargetReply(const TargetReply&) = default;
+    smallPacket (smallPacket&& other_) = default;
+    smallPacket& operator=(smallPacket&&  other_) = default;
+    smallPacket& operator=(const smallPacket&) = default;
+    smallPacket(const smallPacket&) = default;
     #else
-    TargetReply(TargetReply&& other_) OMG_NOEXCEPT;  
-    TargetReply& operator=(TargetReply&&  other_) OMG_NOEXCEPT;
+    smallPacket(smallPacket&& other_) OMG_NOEXCEPT;  
+    smallPacket& operator=(smallPacket&&  other_) OMG_NOEXCEPT;
     #endif
     #endif 
 
-    int32_t flag() const OMG_NOEXCEPT;
-    void flag(int32_t value);
+    rti::core::int64 sequence_number() const OMG_NOEXCEPT;
+    void sequence_number(rti::core::int64 value);
 
-    bool operator == (const TargetReply& other_) const;
-    bool operator != (const TargetReply& other_) const;
+    rti::core::int64 timestamp_ns() const OMG_NOEXCEPT;
+    void timestamp_ns(rti::core::int64 value);
 
-    void swap(TargetReply& other_) OMG_NOEXCEPT ;
+    dds::core::array<char, 4>& payload0() OMG_NOEXCEPT; 
+    const dds::core::array<char, 4>& payload0() const OMG_NOEXCEPT;
+    void payload0(const dds::core::array<char, 4>& value);
+
+    dds::core::array<char, 4>& payload1() OMG_NOEXCEPT; 
+    const dds::core::array<char, 4>& payload1() const OMG_NOEXCEPT;
+    void payload1(const dds::core::array<char, 4>& value);
+
+    dds::core::array<char, 4>& payload2() OMG_NOEXCEPT; 
+    const dds::core::array<char, 4>& payload2() const OMG_NOEXCEPT;
+    void payload2(const dds::core::array<char, 4>& value);
+
+    dds::core::array<char, 4>& payload3() OMG_NOEXCEPT; 
+    const dds::core::array<char, 4>& payload3() const OMG_NOEXCEPT;
+    void payload3(const dds::core::array<char, 4>& value);
+
+    dds::core::array<char, 4>& payload4() OMG_NOEXCEPT; 
+    const dds::core::array<char, 4>& payload4() const OMG_NOEXCEPT;
+    void payload4(const dds::core::array<char, 4>& value);
+
+    bool operator == (const smallPacket& other_) const;
+    bool operator != (const smallPacket& other_) const;
+
+    void swap(smallPacket& other_) OMG_NOEXCEPT ;
 
   private:
 
-    int32_t m_flag_;
+    rti::core::int64 m_sequence_number_;
+    rti::core::int64 m_timestamp_ns_;
+    dds::core::array<char, 4> m_payload0_;
+    dds::core::array<char, 4> m_payload1_;
+    dds::core::array<char, 4> m_payload2_;
+    dds::core::array<char, 4> m_payload3_;
+    dds::core::array<char, 4> m_payload4_;
 
 };
 
-inline void swap(TargetReply& a, TargetReply& b)  OMG_NOEXCEPT 
+inline void swap(smallPacket& a, smallPacket& b)  OMG_NOEXCEPT 
 {
     a.swap(b);
 }
 
-NDDSUSERDllExport std::ostream& operator << (std::ostream& o,const TargetReply& sample);
+NDDSUSERDllExport std::ostream& operator << (std::ostream& o,const smallPacket& sample);
 
 namespace dds { 
     namespace topic {
 
         template<>
-        struct topic_type_name<Target> {
+        struct topic_type_name<largePacket> {
             NDDSUSERDllExport static std::string value() {
-                return "Target";
+                return "largePacket";
             }
         };
 
         template<>
-        struct is_topic_type<Target> : public dds::core::true_type {};
+        struct is_topic_type<largePacket> : public dds::core::true_type {};
 
         template<>
-        struct topic_type_support<Target> {
+        struct topic_type_support<largePacket> {
 
-            NDDSUSERDllExport static void initialize_sample(Target& sample);
+            NDDSUSERDllExport static void initialize_sample(largePacket& sample);
 
             NDDSUSERDllExport static void register_type(
                 dds::domain::DomainParticipant& participant,
                 const std::string & type_name);
 
             NDDSUSERDllExport static std::vector<char>& to_cdr_buffer(
-                std::vector<char>& buffer, const Target& sample);
+                std::vector<char>& buffer, const largePacket& sample);
 
-            NDDSUSERDllExport static void from_cdr_buffer(Target& sample, const std::vector<char>& buffer);
+            NDDSUSERDllExport static void from_cdr_buffer(largePacket& sample, const std::vector<char>& buffer);
         };
 
         template<>
-        struct topic_type_name<TargetReply> {
+        struct topic_type_name<smallPacket> {
             NDDSUSERDllExport static std::string value() {
-                return "TargetReply";
+                return "smallPacket";
             }
         };
 
         template<>
-        struct is_topic_type<TargetReply> : public dds::core::true_type {};
+        struct is_topic_type<smallPacket> : public dds::core::true_type {};
 
         template<>
-        struct topic_type_support<TargetReply> {
+        struct topic_type_support<smallPacket> {
 
-            NDDSUSERDllExport static void initialize_sample(TargetReply& sample);
+            NDDSUSERDllExport static void initialize_sample(smallPacket& sample);
 
             NDDSUSERDllExport static void register_type(
                 dds::domain::DomainParticipant& participant,
                 const std::string & type_name);
 
             NDDSUSERDllExport static std::vector<char>& to_cdr_buffer(
-                std::vector<char>& buffer, const TargetReply& sample);
+                std::vector<char>& buffer, const smallPacket& sample);
 
-            NDDSUSERDllExport static void from_cdr_buffer(TargetReply& sample, const std::vector<char>& buffer);
+            NDDSUSERDllExport static void from_cdr_buffer(smallPacket& sample, const std::vector<char>& buffer);
         };
 
     }
@@ -199,25 +239,25 @@ namespace dds {
 namespace rti { 
     namespace topic {
         template<>
-        struct dynamic_type<Target> {
+        struct dynamic_type<largePacket> {
             typedef dds::core::xtypes::StructType type;
             NDDSUSERDllExport static const dds::core::xtypes::StructType& get();
         };
 
         template<>
-        struct impl_type<Target> {
-            typedef Target_c type;
+        struct impl_type<largePacket> {
+            typedef largePacket_c type;
         };
 
         template<>
-        struct dynamic_type<TargetReply> {
+        struct dynamic_type<smallPacket> {
             typedef dds::core::xtypes::StructType type;
             NDDSUSERDllExport static const dds::core::xtypes::StructType& get();
         };
 
         template<>
-        struct impl_type<TargetReply> {
-            typedef TargetReply_c type;
+        struct impl_type<smallPacket> {
+            typedef smallPacket_c type;
         };
 
     }
@@ -230,5 +270,5 @@ namespace rti {
 #define NDDSUSERDllExport
 #endif
 
-#endif // DataTypes_470592838_hpp
+#endif // DataTypes_470593198_hpp
 

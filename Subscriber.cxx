@@ -1,5 +1,4 @@
 #include "Subscriber.hpp"
-bool app::shutdown_requested = false;
 
 Subscriber::Subscriber() : m_participant(nullptr)
 {
@@ -12,7 +11,6 @@ Subscriber::~Subscriber()
     delete m_participant;
     m_participant = nullptr;
   }
-  dds::domain::DomainParticipant::finalize_participant_factory();
 }
 
 bool Subscriber::init(int domaimId)
@@ -47,9 +45,17 @@ bool Subscriber::init(int domaimId)
   /*export NDDS_DISCOVERY_PEERS="192.168.5.165:7400,192.168.5.165:7401"*/
   #endif
   m_participant = new dds::domain::DomainParticipant(domaimId,participant_qos);
-  std::future<bool> result = std::async(std::launch::async,&Subscriber::initSubType<Target>,this,"TargetTopic");
-  std::future<bool> result2 = std::async(std::launch::async,&Subscriber::initSubType<TargetReply>,this,"TargetReplyTopic");
-  return result.get() && result2.get();
+  return m_participant != nullptr;
+}
+
+bool Subscriber::addLargePacketTopic(const std::string& topicName)
+{
+  return initSubType<largePacket>(topicName);
+}
+
+bool Subscriber::addSmallPacketTopic(const std::string& topicName)
+{
+  return initSubType<smallPacket>(topicName);
 }
 
 template <typename T>
@@ -59,29 +65,32 @@ bool Subscriber::initSubType(std::string topicName)
   dds::sub::Subscriber subscriber(*m_participant);
   auto dataReader = std::make_shared<ReaderHolder<T>>(subscriber, topic);
   m_readers[topicName] = dataReader;
-  dds::sub::DataReader<T>& reader = dataReader->getReader();
-
-  dds::sub::cond::ReadCondition read_condition(
-    reader,
-    dds::sub::status::DataState::any());
-  dds::core::cond::WaitSet waitset;
-  waitset += read_condition;
-
-  std::cout << "listen topic: " << topicName << std::endl;
-
-  while (!app::shutdown_requested)
-  {
-    try {
-      auto conditions = waitset.wait(dds::core::Duration(1));
-      if (!conditions.empty()) {
-        HandleMsg(reader);
-      }
-    } catch (const dds::core::TimeoutError&) {
-      continue;
-    }
-  }
-  std::cout << "stop listen topic: " << topicName << std::endl;
+  std::thread listener_thread([this, dataReader, topicName]() {
+    this->listenToTopic(dataReader, topicName);
+  });
+  listener_thread.detach();
+  std::cout << "start listen thread: " << topicName << std::endl;
   return true;
+}
+template <typename T>
+void Subscriber::listenToTopic(std::shared_ptr<ReaderHolder<T>> dataReader, const std::string& topicName)
+{
+    dds::sub::DataReader<T>& reader = dataReader->getReader();
+    dds::sub::cond::ReadCondition read_condition(reader, dds::sub::status::DataState::any());
+    dds::core::cond::WaitSet waitset;
+    waitset += read_condition;
+    
+    while (!app::shutdown_requested) {
+        try {
+            auto conditions = waitset.wait(dds::core::Duration::from_millisecs(100));
+            if (!conditions.empty()) {
+                HandleMsg(reader);
+            }
+        } catch (const dds::core::TimeoutError&) {
+            continue;
+        }
+    }
+    std::cout << "stop listen: " << topicName << std::endl;
 }
 
 template <typename T>

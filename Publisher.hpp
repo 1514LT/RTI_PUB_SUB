@@ -28,6 +28,7 @@ private:
 public:
   WriterHolder(const dds::pub::Publisher& publisher, const dds::topic::Topic<T>& topic):writer(publisher, topic){}
   void write(const T& data){writer.write(data);}
+  dds::pub::DataWriter<T>& getWriter(){return writer;}
 };
 
 
@@ -48,6 +49,8 @@ public:
   template <typename T>
   void sendMsg(std::string topicName,const T& data);
   void waitForAcknowledgments();
+  bool addLargePacketTopic(const std::string& topicName);
+  bool addSmallPacketTopic(const std::string& topicName);
 };
 template <typename T>
 void Publisher::sendMsg(std::string topicName,const T& data)

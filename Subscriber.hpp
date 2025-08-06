@@ -48,6 +48,10 @@ public:
   bool initSubType(std::string topicName);
   template <typename T>
   void HandleMsg(dds::sub::DataReader<T> reader);
+  template <typename T>
+  void listenToTopic(std::shared_ptr<ReaderHolder<T>> dataReader, const std::string& topicName);
+  bool addLargePacketTopic(const std::string& topicName);
+  bool addSmallPacketTopic(const std::string& topicName);
 };
 
 
