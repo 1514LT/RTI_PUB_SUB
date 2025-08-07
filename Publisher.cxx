@@ -27,9 +27,13 @@ bool Publisher::initPubType(std::string topicName)
 {
   dds::topic::Topic<T> topic(*m_participant,topicName);
   dds::pub::Publisher publisher(*m_participant);
-  auto dataWriter = std::make_shared<WriterHolder<T>>(publisher, topic);
+  dds::pub::qos::DataWriterQos qos;
+  qos 
+    << dds::core::policy::Reliability::Reliable()
+    << dds::core::policy::History::KeepAll()
+    << dds::core::policy::Durability::TransientLocal();
+  auto dataWriter = std::make_shared<WriterHolder<T>>(publisher, topic,qos);
   m_writers[topicName] = dataWriter;
-  // /*
   dds::pub::DataWriter<T>& writer = dataWriter->getWriter();
   const int max_wait_seconds = 10;
   for (int i = 0; i < max_wait_seconds; ++i) 
@@ -43,8 +47,6 @@ bool Publisher::initPubType(std::string topicName)
   }
   std::cout << "time out" << std::endl;
   return false;
-  // */
- return true;
 }
 
 bool Publisher::init(int domaimId)

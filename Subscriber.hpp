@@ -30,7 +30,10 @@ class ReaderHolder : public BaseReaderHolder
 private:
   dds::sub::DataReader<T> reader;
 public:
-  ReaderHolder(const dds::sub::Subscriber subscriber, const dds::topic::Topic<T>& topic):reader(subscriber, topic){}
+  ReaderHolder(const dds::sub::Subscriber subscriber, const dds::topic::Topic<T>& topic)
+    : reader(subscriber, topic){}
+  ReaderHolder(const dds::sub::Subscriber subscriber, const dds::topic::Topic<T>& topic, dds::sub::qos::DataReaderQos& qos)
+    : reader(subscriber, topic,qos){}
   dds::sub::DataReader<T>& getReader() { return reader; }
 };
 

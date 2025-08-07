@@ -40,7 +40,6 @@ set(COMMON_SOURCES
 # 通用对象库
 add_library(DateTypes_common SHARED ${COMMON_SOURCES})
 
-# Publisher可执行文件
 add_executable(NodeA NodeA.cxx)
 target_link_libraries(NodeA 
     DateTypes_common
@@ -54,7 +53,6 @@ target_link_libraries(NodeA
     dl
 )
 
-# Subscriber可执行文件（使用WaitSet）
 add_executable(NodeB NodeB.cxx)
 target_link_libraries(NodeB 
     DateTypes_common
@@ -67,5 +65,19 @@ target_link_libraries(NodeB
     rt 
     dl
 )
+
+add_executable(NodeC NodeC.cxx)
+target_link_libraries(NodeC 
+    DateTypes_common
+    nddstransporttcp
+    nddscpp2
+    nddsc
+    nddscore
+    m 
+    pthread 
+    rt 
+    dl
+)
 target_link_options(NodeA PRIVATE "-Wl,--no-as-needed")
 target_link_options(NodeB PRIVATE "-Wl,--no-as-needed")
+target_link_options(NodeC PRIVATE "-Wl,--no-as-needed")

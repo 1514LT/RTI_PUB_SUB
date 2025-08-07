@@ -63,7 +63,12 @@ bool Subscriber::initSubType(std::string topicName)
 {
   dds::topic::Topic<T> topic(*m_participant,topicName);
   dds::sub::Subscriber subscriber(*m_participant);
-  auto dataReader = std::make_shared<ReaderHolder<T>>(subscriber, topic);
+  dds::sub::qos::DataReaderQos qos;
+  qos 
+    << dds::core::policy::Reliability::Reliable()
+    << dds::core::policy::History::KeepAll()
+    << dds::core::policy::Durability::TransientLocal();
+  auto dataReader = std::make_shared<ReaderHolder<T>>(subscriber, topic,qos);
   m_readers[topicName] = dataReader;
   std::thread listener_thread([this, dataReader, topicName]() {
     this->listenToTopic(dataReader, topicName);

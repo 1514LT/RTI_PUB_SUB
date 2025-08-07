@@ -26,7 +26,10 @@ class WriterHolder : public BaseWriterHolder
 private:
   dds::pub::DataWriter<T> writer;
 public:
-  WriterHolder(const dds::pub::Publisher& publisher, const dds::topic::Topic<T>& topic):writer(publisher, topic){}
+  WriterHolder(const dds::pub::Publisher& publisher, const dds::topic::Topic<T>& topic)
+  : writer(publisher, topic) {}
+  WriterHolder(const dds::pub::Publisher& publisher, const dds::topic::Topic<T>& topic,dds::pub::qos::DataWriterQos &qos)
+    : writer(publisher, topic,qos) {}
   void write(const T& data){writer.write(data);}
   dds::pub::DataWriter<T>& getWriter(){return writer;}
 };
