@@ -22,7 +22,7 @@ include_directories(
 add_compile_options(-Wno-class-memaccess)
 # 预处理定义
 add_definitions(-DRTI_UNIX -DRTI_LINUX -DRTI_64BIT)
-add_definitions(-DUDP_V4)
+add_definitions(-DDISCOVER)
 # 库目录
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/lib/x64Linux3gcc4.8.2)
 
@@ -78,6 +78,20 @@ target_link_libraries(NodeC
     rt 
     dl
 )
+
+add_executable(Discover DiscoveryServer.cxx)
+target_link_libraries(Discover 
+    DateTypes_common
+    nddstransporttcp
+    nddscpp2
+    nddsc
+    nddscore
+    m 
+    pthread 
+    rt 
+    dl
+)
 target_link_options(NodeA PRIVATE "-Wl,--no-as-needed")
 target_link_options(NodeB PRIVATE "-Wl,--no-as-needed")
 target_link_options(NodeC PRIVATE "-Wl,--no-as-needed")
+target_link_options(Discover PRIVATE "-Wl,--no-as-needed")

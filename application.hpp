@@ -9,9 +9,10 @@
 #include "string.h"
 #include <thread>
 #include <string>
+#include <atomic>
 namespace app
 {
-  extern bool shutdown_requested;
+  extern std::atomic_bool shutdown_requested;
   extern bool throughput_flag;
   extern bool delay_flag;
   extern int test_time;

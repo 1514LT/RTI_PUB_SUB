@@ -35,6 +35,28 @@ public:
 };
 
 
+class ParticipantLitenner : public dds::domain::NoOpDomainParticipantListener
+{
+public:
+  void on_subscription_matched(
+    dds::sub::AnyDataReader& any,
+    const dds::core::status::SubscriptionMatchedStatus& sub)
+    {
+      std::cout << "on_subscription_matched" << std::endl;
+    }
+  void on_publication_matched(
+  dds::pub::AnyDataWriter& any,
+  const ::dds::core::status::PublicationMatchedStatus& sub)
+  {
+    std::cout << "on_publication_matched" << std::endl;
+  }
+  void on_sample_lost(
+    dds::sub::AnyDataReader&,
+    const dds::core::status::SampleLostStatus&)
+  {
+    std::cout << "on_sample_lost" << std::endl;
+  }
+};
 
 class Publisher
 {
@@ -42,6 +64,7 @@ private:
   std::map<std::string, std::shared_ptr<BaseWriterHolder>> m_writers;
 
   dds::domain::DomainParticipant* m_participant;
+  std::shared_ptr<ParticipantLitenner> m_listenner;
 public:
   Publisher();
   ~Publisher();

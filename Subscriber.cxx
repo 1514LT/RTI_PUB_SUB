@@ -6,7 +6,7 @@ Subscriber::Subscriber() : m_participant(nullptr)
 
 Subscriber::~Subscriber()
 {
-  m_readers.clear();
+  // m_readers.clear();
   if (m_participant) {
     delete m_participant;
     m_participant = nullptr;
@@ -16,6 +16,23 @@ Subscriber::~Subscriber()
 bool Subscriber::init(int domaimId)
 {
   auto participant_qos = dds::domain::qos::DomainParticipantQos();
+  #ifdef DISCOVER
+  // rti::core::policy::Discovery discover;
+  // dds::core::StringSeq discovery_servers = {
+  //       "0@udpv4://192.168.5.165:8080"
+  //   };
+  // discover.initial_peers(discovery_servers);
+  // participant_qos << discover;
+  rti::core::policy::Property discovery_props;
+  discovery_props.set({
+    {"dds.discovery.enable_discovery_server", "1"},
+    {"dds.discovery.participant_role", "DISCOVERY_CLIENT"},
+    {"dds.discovery.servers", "0@udpv4://192.168.5.165:8080"},
+    {"dds.discovery.client_announcement_period", "5.0"},
+    {"dds.discovery.client_heartbeat_period", "1.0"},
+  });
+  participant_qos << discovery_props;
+  #endif
   #ifdef SHM
   std::cout << "SHM" << std::endl;
   participant_qos << rti::core::policy::TransportBuiltin::Shmem();
@@ -85,7 +102,7 @@ void Subscriber::listenToTopic(std::shared_ptr<ReaderHolder<T>> dataReader, cons
     dds::core::cond::WaitSet waitset;
     waitset += read_condition;
     
-    while (!app::shutdown_requested) {
+    while (!app::shutdown_requested.load()) {
         try {
             auto conditions = waitset.wait(dds::core::Duration::from_millisecs(100));
             if (!conditions.empty()) {

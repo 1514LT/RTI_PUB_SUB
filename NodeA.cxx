@@ -27,7 +27,7 @@ void handleDataIntegrity() // 多域多主题小包数据完整性设计
   pubDomain.emplace_back(0);
   int index = 0;
   std::string input;
-  while (std::getline(std::cin, input) && !app::shutdown_requested)
+  while (std::getline(std::cin, input) && !app::shutdown_requested.load())
   {
     if (input == "quit" || input == "exit") 
     {
@@ -60,7 +60,7 @@ void handleStrongDataConsistency() // 数据强一致性
   pubDomain.emplace_back(0);
   std::string input;
   int index = 0;
-  while (std::getline(std::cin, input) && !app::shutdown_requested)
+  while (std::getline(std::cin, input) && !app::shutdown_requested.load())
   {
     if (input == "quit" || input == "exit") 
     {
@@ -70,6 +70,10 @@ void handleStrongDataConsistency() // 数据强一致性
     std::cout << "send pack" << std::endl;
     for(int i = 0; i < 50; i++)
     {
+      if(app::shutdown_requested.load())
+      {
+        break;
+      }
       smallPacket pack;
       pack.timestamp_ns(app::getCurrentMicroseconds());
       pack.sequence_number(index);
@@ -85,7 +89,7 @@ void handleStrongDataConsistency() // 数据强一致性
 
 int main(int argc, char const *argv[])
 {
-  // app::setup_signal_handlers();
+  app::setup_signal_handlers();
   #if 0
   handleDataIntegrity();
   #else

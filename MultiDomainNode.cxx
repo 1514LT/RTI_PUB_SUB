@@ -8,7 +8,7 @@ MultiDomainNode::~MultiDomainNode()
 {
   m_publishers.clear();
   m_subscribers.clear();
-  dds::domain::DomainParticipant::finalize_participant_factory();
+  // dds::domain::DomainParticipant::finalize_participant_factory();
 }
 
 bool MultiDomainNode::initDomains(const std::vector<int>& domainIds)

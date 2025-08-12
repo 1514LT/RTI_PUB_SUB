@@ -6,7 +6,7 @@ Publisher::Publisher() : m_participant(nullptr)
 
 Publisher::~Publisher()
 {
-  m_writers.clear();
+  // m_writers.clear();
   
   if (m_participant) {
     delete m_participant;
@@ -51,7 +51,19 @@ bool Publisher::initPubType(std::string topicName)
 
 bool Publisher::init(int domaimId)
 {
+  m_listenner = std::make_shared<ParticipantLitenner>();
   auto participant_qos = dds::domain::qos::DomainParticipantQos();
+  #ifdef DISCOVER
+  rti::core::policy::Property discovery_props;
+  discovery_props.set({
+    {"dds.discovery.enable_discovery_server", "1"},
+    {"dds.discovery.participant_role", "DISCOVERY_CLIENT"},
+    {"dds.discovery.servers", "0@udpv4://192.168.5.165:8080"},
+    {"dds.discovery.client_announcement_period", "5.0"},
+    {"dds.discovery.client_heartbeat_period", "1.0"},
+  });
+  participant_qos << discovery_props;
+  #endif
   #ifdef SHM
   std::cout << "SHM" << std::endl;
   participant_qos << rti::core::policy::TransportBuiltin::Shmem();
@@ -80,7 +92,7 @@ bool Publisher::init(int domaimId)
   /*export NDDS_DISCOVERY_PEERS="192.168.5.165:7400,192.168.5.165:7401"*/
   participant_qos << tcp_client_props;
   #endif
-  m_participant = new dds::domain::DomainParticipant(domaimId,participant_qos);
+  m_participant = new dds::domain::DomainParticipant(domaimId,participant_qos,m_listenner.get());
   return m_participant != nullptr;
 }
 

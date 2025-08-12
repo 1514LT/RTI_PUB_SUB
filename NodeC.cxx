@@ -13,7 +13,7 @@ void handleStrongDataConsistency() // 数据强一致性
   std::vector<int> pubDomain;
   pubDomain.emplace_back(0);
   std::string input;
-  while (std::getline(std::cin, input) && !app::shutdown_requested)
+  while (std::getline(std::cin, input) && !app::shutdown_requested.load())
   {
     if (input == "quit" || input == "exit") 
     {
@@ -25,7 +25,7 @@ void handleStrongDataConsistency() // 数据强一致性
 
 int main(int argc, char const *argv[])
 {
-  // app::setup_signal_handlers();
+  app::setup_signal_handlers();
   handleStrongDataConsistency();
   return 0;
 }

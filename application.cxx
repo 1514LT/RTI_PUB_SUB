@@ -1,13 +1,14 @@
 #include "application.hpp"
-bool app::shutdown_requested = false;
+std::atomic_bool app::shutdown_requested(false);
 bool app::throughput_flag = false;
 bool app::delay_flag = false;
 int app::test_time = 1;
 
 void app::stop_handler(int)
 {
-    shutdown_requested = true;
+    app::shutdown_requested.store(true);
     std::cout << "preparing to shut down..." << std::endl;
+    std::cout.flush();
 }
 
 void app::setup_signal_handlers()
@@ -89,5 +90,5 @@ void app::timer(int minutes)
     std::cout << "定时器开始：" << minutes << " 分钟" << std::endl;
     std::this_thread::sleep_for(std::chrono::minutes(minutes));
     std::cout << "⏰ 时间到！" << std::endl;
-    app::shutdown_requested = true;
+    app::shutdown_requested.store(true);
 }
