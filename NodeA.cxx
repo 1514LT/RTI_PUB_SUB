@@ -4,30 +4,22 @@ void handleTest()
   MultiDomainNode nodeA;
   std::vector<int> domains = {0};
   nodeA.initDomains(domains,true);
-  // 设置消息处理器
-  // nodeA.setCmdHandler([](const cmd::ControlCommand& cmd) {
-  //   std::cout << "NodeA received command: " << cmd.commandType() << std::endl;
-  //   // 处理命令逻辑
-  //   switch(cmd.commandType()) {
-  //     case cmd::CommandType_def::POWER_ON:
-  //       std::cout << "NodeA executing POWER_ON command" << std::endl;
-  //       break;
-  //     case cmd::CommandType_def::POWER_OFF:
-  //       std::cout << "NodeA executing POWER_OFF command" << std::endl;
-  //       break;
-  //     default:
-  //       std::cout << "NodeA unknown command" << std::endl;
-  //       break;
-  //   }
-  // });
+  nodeA.setCmdHandler([](const cmd::ControlCommand& cmd) 
+  {
+    std::cout << "NodeA received command: " << cmd.commandType() << std::endl;
+  });
 
-    nodeA.setTaskRequestHandler([](const task::TaskRequestMessage& request) -> task::TaskResponseMessage {
+  nodeA.setTaskRequestHandler([](const task::TaskRequestMessage& request) -> task::TaskResponseMessage {
+    if(request.header().receiver() != Particpaint::NodeA)
+    {
+      task::TaskResponseMessage response;
+      response.result().status(task::TaskStatus_def::CANCELLED);
+      return response;
+    }
     std::cout << "NodeA processing task: " << request.task().taskName() << std::endl;
     
-    // 模拟任务处理
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
     
-    // 创建响应
     task::TaskResponseMessage response;
     MessageHeader header;
     header.sender(Particpaint::NodeA);

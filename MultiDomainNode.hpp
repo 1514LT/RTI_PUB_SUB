@@ -2,19 +2,18 @@
 #define MULTIDOMAINNODE_HPP
 
 #include "Publisher.hpp"
-#include "Subscriber.hpp"
 #include <vector>
 #include <map>
 #include <memory>
 #include <string>
 #include <atomic>
+#include <functional>
 
-// 前向声明
+class Subscriber;
 namespace cmd { struct ControlCommand; }
 namespace task { struct TaskRequestMessage; struct TaskResponseMessage; }
 namespace heartbeat { struct HeartbeatMessage; }
 
-// 消息处理回调类型定义
 using CmdHandler = std::function<void(const cmd::ControlCommand&)>;
 using TaskRequestHandler = std::function<task::TaskResponseMessage(const task::TaskRequestMessage&)>;
 using TaskResponseHandler = std::function<void(const task::TaskResponseMessage&)>;
@@ -35,7 +34,6 @@ private:
     std::map<int,std::shared_ptr<Subscriber>> m_subscribers;
     std::map<int, std::shared_ptr<Publisher>> m_publishers;
     
-    // 消息处理器
     CmdHandler m_cmdHandler;
     TaskRequestHandler m_taskRequestHandler;
     TaskResponseHandler m_taskResponseHandler;
@@ -49,13 +47,11 @@ public:
     MultiDomainNode();
     ~MultiDomainNode();
     
-    // 设置消息处理器
     void setCmdHandler(CmdHandler handler) { m_cmdHandler = handler; }
     void setTaskRequestHandler(TaskRequestHandler handler) { m_taskRequestHandler = handler; }
     void setTaskResponseHandler(TaskResponseHandler handler) { m_taskResponseHandler = handler; }
     void setHeartbeatHandler(HeartbeatHandler handler) { m_heartbeatHandler = handler; }
     
-    // 获取消息处理器（供Subscriber调用）
     CmdHandler getCmdHandler() const { return m_cmdHandler; }
     TaskRequestHandler getTaskRequestHandler() const { return m_taskRequestHandler; }
     TaskResponseHandler getTaskResponseHandler() const { return m_taskResponseHandler; }

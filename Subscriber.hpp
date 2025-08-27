@@ -45,14 +45,14 @@ class Subscriber
 private:
   dds::domain::DomainParticipant* m_participant;
   std::map<std::string, std::shared_ptr<BaseReaderHolder>> m_readers;
-
+  std::shared_ptr<Publisher> pub_;
   MultiDomainNode* m_node;
   
 public:
   Subscriber();
   ~Subscriber();
 public:
-  bool init(int domaimId);
+  bool init(int domaimId,bool pubNeed=false);
   template <typename T>
   bool initSubType(std::string topicName);
   void setNode(MultiDomainNode* node) { m_node = node; }

@@ -6,7 +6,6 @@ void handleTest()
   std::vector<int> domains = {0};
   guide.initDomains(domains);
 
-  // 设置消息处理器
   guide.setHeartbeatHandler([](const heartbeat::HeartbeatMessage& hb) {
     std::cout << "Guide received heartbeat from: " << hb.header().sender() 
               << ", CPU usage: " << hb.telemetry().cpuUsage() 
@@ -46,13 +45,32 @@ void handleTest()
     comandPackeg.commandType(cmd::CommandType_def::POWER_ON);
     guide.publishCmdPacket({0},"ControlCommandTopic",comandPackeg);
 
-    task::TaskRequestMessage taskRequstPack;
+    task::TaskRequestMessage taskRequstPackA;
     header.priority(2);
     header.messageType(MessageType::TASK_REQUEST);
-    taskRequstPack.header(header);
-    taskRequstPack.task().taskName("test");
-    guide.publishTaskRequestPacket({0},"TaskRequestTopic",taskRequstPack);
+    header.receiver(Particpaint::NodeA);
+    taskRequstPackA.header(header);
+    taskRequstPackA.task().taskName("testA");
 
+    task::TaskRequestMessage taskRequstPackB;
+    header.priority(2);
+    header.messageType(MessageType::TASK_REQUEST);
+    header.receiver(Particpaint::NodeB);
+    taskRequstPackB.header(header);
+    taskRequstPackB.task().taskName("testB");
+
+    task::TaskRequestMessage taskRequstPackC;
+    header.priority(2);
+    header.messageType(MessageType::TASK_REQUEST);
+    header.receiver(Particpaint::NodeC);
+    taskRequstPackC.header(header);
+    taskRequstPackC.task().taskName("testC");
+
+    guide.publishTaskRequestPacket({0},"TaskRequestTopic",taskRequstPackA);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    guide.publishTaskRequestPacket({0},"TaskRequestTopic",taskRequstPackB);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    guide.publishTaskRequestPacket({0},"TaskRequestTopic",taskRequstPackC);
     std::this_thread::sleep_for(std::chrono::seconds(1));
     index ++;
   }  

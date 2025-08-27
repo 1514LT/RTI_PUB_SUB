@@ -1,4 +1,5 @@
 #include "MultiDomainNode.hpp"
+#include "Subscriber.hpp"
 #include <thread>
 #include <chrono>
 
@@ -8,7 +9,6 @@ MultiDomainNode::~MultiDomainNode()
 {
   m_publishers.clear();
   m_subscribers.clear();
-  // dds::domain::DomainParticipant::finalize_participant_factory();
 }
 
 bool MultiDomainNode::initDomains(const std::vector<int>& domainIds,bool pubNeed)
@@ -18,16 +18,10 @@ bool MultiDomainNode::initDomains(const std::vector<int>& domainIds,bool pubNeed
     for (int domainId : domainIds) {
         auto publisher = std::make_shared<Publisher>();
         std::shared_ptr<Subscriber> subscriber;
-        if(pubNeed)
-        {
-          subscriber = std::make_shared<Subscriber>(true);
-        }
-        else
-        {
-          subscriber = std::make_shared<Subscriber>();
-        }
+        subscriber = std::make_shared<Subscriber>();
+        subscriber->setNode(this);
         
-        if (!publisher->init(domainId) || !subscriber->init(domainId)) {
+        if (!publisher->init(domainId) || !subscriber->init(domainId,pubNeed)) {
             std::cerr << "init domain " << domainId << " faild" << std::endl;
             return false;
         }

@@ -1,5 +1,7 @@
 #include "Subscriber.hpp"
-Subscriber::Subscriber() : m_participant(nullptr)
+#include "MultiDomainNode.hpp"
+
+Subscriber::Subscriber() : m_participant(nullptr), m_node(nullptr)
 {
 }
 
@@ -12,8 +14,15 @@ Subscriber::~Subscriber()
   }
 }
 
-bool Subscriber::init(int domaimId)
+bool Subscriber::init(int domaimId,bool pubNeed)
 {
+  if(pubNeed)
+  {
+    pub_ = std::make_shared<Publisher>();
+    pub_->init(domaimId);
+    pub_->addTaskResponsePacketTopic("TaskResponseTopic");
+  }
+
   auto participant_qos = dds::domain::qos::DomainParticipantQos();
   #ifdef DISCOVER
   // rti::core::policy::Discovery discover;
@@ -142,7 +151,7 @@ void Subscriber::HandleMsg(dds::sub::DataReader<T> reader)
     }
   }
 }
-// 命令消息的特化处理
+
 template <>
 void Subscriber::HandleMsg<cmd::ControlCommand>(dds::sub::DataReader<cmd::ControlCommand> reader)
 {
@@ -155,7 +164,6 @@ void Subscriber::HandleMsg<cmd::ControlCommand>(dds::sub::DataReader<cmd::Contro
     {
       std::cout << "Command received: " << sample.data() << std::endl;
       
-      // 调用注册的处理器
       if (m_node && m_node->getCmdHandler()) {
         m_node->getCmdHandler()(sample.data());
       }
@@ -163,7 +171,7 @@ void Subscriber::HandleMsg<cmd::ControlCommand>(dds::sub::DataReader<cmd::Contro
   }
 }
 
-// 任务请求消息的特化处理
+
 template <>
 void Subscriber::HandleMsg<task::TaskRequestMessage>(dds::sub::DataReader<task::TaskRequestMessage> reader)
 {
@@ -174,19 +182,21 @@ void Subscriber::HandleMsg<task::TaskRequestMessage>(dds::sub::DataReader<task::
   {
     if (sample.info().valid())
     {
-      std::cout << "Task request received: " << sample.data() << std::endl;
-      
-      // 调用注册的处理器
       if (m_node && m_node->getTaskRequestHandler()) {
         auto response = m_node->getTaskRequestHandler()(sample.data());
-        
-        // 自动发送响应
+        if(response.result().status() != task::TaskStatus_def::COMPLETED)
+        {
+          continue;
+        }
+        std::cout << "Task request received: " << sample.data() << std::endl;
+        if (pub_) {
+          pub_->sendMsg("TaskResponseTopic", response);
+        }
       }
     }
   }
 }
 
-// 任务响应消息的特化处理
 template <>
 void Subscriber::HandleMsg<task::TaskResponseMessage>(dds::sub::DataReader<task::TaskResponseMessage> reader)
 {
@@ -199,7 +209,6 @@ void Subscriber::HandleMsg<task::TaskResponseMessage>(dds::sub::DataReader<task:
     {
       std::cout << "Task response received: " << sample.data() << std::endl;
       
-      // 调用注册的处理器
       if (m_node && m_node->getTaskResponseHandler()) {
         m_node->getTaskResponseHandler()(sample.data());
       }
@@ -207,7 +216,6 @@ void Subscriber::HandleMsg<task::TaskResponseMessage>(dds::sub::DataReader<task:
   }
 }
 
-// 心跳消息的特化处理
 template <>
 void Subscriber::HandleMsg<heartbeat::HeartbeatMessage>(dds::sub::DataReader<heartbeat::HeartbeatMessage> reader)
 {
@@ -218,9 +226,8 @@ void Subscriber::HandleMsg<heartbeat::HeartbeatMessage>(dds::sub::DataReader<hea
   {
     if (sample.info().valid())
     {
-      std::cout << "Heartbeat received from: " << sample.data().header().sender() << std::endl;
+      std::cout << "Heartbeat received " << sample.data() << std::endl;
       
-      // 调用注册的处理器
       if (m_node && m_node->getHeartbeatHandler()) {
         m_node->getHeartbeatHandler()(sample.data());
       }
