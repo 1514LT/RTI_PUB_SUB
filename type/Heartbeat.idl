@@ -1,0 +1,46 @@
+#include "MessageHeader.idl"
+module heartbeat
+{
+  // 卫星状态枚举
+  enum SatelliteStatus {
+      OPERATIONAL,      // 正常运行
+      MAINTENANCE,      // 维护模式
+      EMERGENCY,        // 紧急状态
+      OFFLINE,          // 离线状态
+      RECONFIGURING     // 重新配置中
+  };
+  // 遥测数据结构
+  struct TelemetryData {
+      string satelliteId;           // 卫星ID
+      long long timestamp;          // 时间戳
+      double batteryLevel;          // 电池电量
+      double solarPanelOutput;      // 太阳能板输出
+      double temperature;           // 温度
+      double cpuUsage;              // CPU使用率
+      double memoryUsage;           // 内存使用率
+      double dataStorageUsage;      // 数据存储使用率
+      boolean antennaStatus;        // 天线状态
+      boolean cameraStatus;         // 相机状态
+      string systemHealth;          // 系统健康状态
+  };
+  // 卫星标识信息
+  struct SatelliteInfo {
+      string satelliteId;           // 卫星唯一标识符
+      string satelliteName;         // 卫星名称
+      string constellation;         // 所属星座
+      double latitude;              // 纬度
+      double longitude;             // 经度
+      double altitude;              // 高度
+      double velocity;              // 速度
+      long long timestamp;          // 时间戳
+      SatelliteStatus status;       // 卫星状态
+  };
+
+  // 心跳消息
+  struct HeartbeatMessage {
+      MessageHeader header;         // 消息头
+      SatelliteInfo satelliteInfo; // 卫星信息
+      TelemetryData telemetry;     // 遥测数据
+      long uptime;                 // 运行时间
+  };
+};

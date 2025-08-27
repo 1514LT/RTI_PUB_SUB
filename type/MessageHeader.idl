@@ -1,0 +1,26 @@
+// 通信消息类型
+enum MessageType {
+    HEARTBEAT,        // 心跳消息
+    TASK_REQUEST,     // 任务请求
+    TASK_RESPONSE,    // 任务响应
+    COMMAND          // 控制命令
+};
+enum Particpaint {
+    NodeA,
+    NodeB,
+    NodeC,
+    Guide
+};
+
+// 通信消息头
+struct MessageHeader {
+    long messageId;             // 消息唯一标识
+    Particpaint sender;           // 发送方
+    Particpaint receiver;         // 接收方
+    MessageType messageType;      // 消息类型
+    long long timestamp;          // 发送时间戳
+    long sequenceNumber;          // 序列号
+    long priority;                // 优先级 (1-10)
+    boolean requiresAck;          // 是否需要确认
+};
+

@@ -1,0 +1,26 @@
+#include "MessageHeader.idl"
+
+module cmd{
+  // 命令类型枚举
+  enum CommandType {
+      POWER_ON,          // 开机
+      POWER_OFF,         // 关机
+      RESET,             // 重置
+      RECONFIGURE,       // 重新配置
+      CALIBRATE,         // 校准
+      EMERGENCY_STOP,    // 紧急停止
+      CUSTOM             // 自定义命令
+  };
+  // 控制命令
+  struct ControlCommand {
+      MessageHeader header;         // 消息头
+      CommandType commandType;      // 命令类型
+  };
+
+};
+
+
+
+
+
+

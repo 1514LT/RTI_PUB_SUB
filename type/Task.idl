@@ -1,0 +1,66 @@
+#include "MessageHeader.idl"
+
+module task{
+
+  // 任务类型枚举
+  enum TaskType {
+      IMAGING,           // 成像任务
+      COMMUNICATION,     // 通信任务
+      NAVIGATION,        // 导航任务
+      SCIENCE,           // 科学实验
+      MAINTENANCE,       // 维护任务
+      EMERGENCY          // 紧急任务
+  };
+
+  // 任务优先级枚举
+  enum TaskPriority {
+      CRITICAL,          // 关键
+      HIGH,              // 高
+      MEDIUM,            // 中
+      LOW                // 低
+  };
+
+  // 任务状态枚举
+  enum TaskStatus {
+      PENDING,           // 待执行
+      IN_PROGRESS,       // 执行中
+      COMPLETED,         // 已完成
+      FAILED,            // 失败
+      CANCELLED,         // 已取消
+      PAUSED             // 暂停
+  };
+  // 任务数据结构
+  struct TaskDefinition {
+      string taskId;                // 任务唯一标识
+      string taskName;              // 任务名称
+      TaskType taskType;            // 任务类型
+      TaskPriority priority;        // 任务优先级
+      long startTime;               // 开始时间
+      long endTime;                 // 结束时间
+      string targetSatellite;       // 目标卫星
+      string parameters;            // 任务参数(JSON格式)
+      TaskStatus status;            // 任务状态
+  };
+
+
+
+  // 任务执行结果
+  struct TaskResult {
+      string taskId;                // 任务ID
+      TaskStatus status;            // 执行状态
+      string resultData;            // 结果数据
+      string errorMessage;          // 错误信息
+      long long completionTime;          // 完成时间
+  };
+
+  // 任务请求消息
+  struct TaskRequestMessage {
+      MessageHeader header;         // 消息头
+      TaskDefinition task;          // 任务定义
+  };
+  // 任务响应消息
+  struct TaskResponseMessage {
+      MessageHeader header;         // 消息头
+      TaskResult result;
+  };
+};
