@@ -1,0 +1,5 @@
+struct BasicStruct {
+    long id;              // 成员ID
+    string name;          // 名称
+    double value;         // 数值
+};
