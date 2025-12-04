@@ -4,6 +4,7 @@
 #include "dds_c/dds_c_infrastructure.h"
 #include <iostream>
 #include <thread>
+
 class Sub
 {
 private:
@@ -23,7 +24,24 @@ public:
 Sub::Sub()
 {
   DDSDomainParticipantFactory* factory = DDSDomainParticipantFactory::get_instance();
-  participant_ = factory->create_participant(0, DDS_PARTICIPANT_QOS_DEFAULT, NULL, DDS_STATUS_MASK_NONE);
+  
+  // 加载 QoS 配置文件
+  DDS_DomainParticipantQos participant_qos;
+  factory->get_participant_qos_from_profile(
+    participant_qos,
+    "SecurityLibrary",
+    "SubscriberSecurityProfile");
+  
+  // 使用安全配置创建 Participant
+  participant_ = factory->create_participant(0, participant_qos, NULL, DDS_STATUS_MASK_NONE);
+  
+  if (participant_ == NULL) {
+    std::cerr << "❌ Failed to create participant with security profile!" << std::endl;
+    throw std::runtime_error("Failed to create secure participant");
+  }
+  
+  std::cout << "✓ Subscriber: Secure participant created successfully" << std::endl;
+  
   BasicStructTypeSupport::register_type(participant_);
   topic_ = participant_->create_topic("BasicStruct","BasicStruct",DDS_TOPIC_QOS_DEFAULT,NULL,DDS_STATUS_MASK_NONE);
   subscriber_ = participant_->create_subscriber(DDS_SUBSCRIBER_QOS_DEFAULT, NULL, DDS_STATUS_MASK_NONE);
@@ -32,6 +50,8 @@ Sub::Sub()
   reader_ = subscriber_->create_datareader(
     topic_, reader_qos, NULL, DDS_STATUS_MASK_NONE);
   typed_reader_ = BasicStructDataReader::narrow(reader_);
+  
+  std::cout << "✓ Subscriber: Secure communication initialized" << std::endl;
 }
 
 Sub::~Sub()
@@ -51,18 +71,31 @@ void Sub::handlMsg()
         if (info_seq[i].valid_data)
         {
           const BasicStruct& reply = reply_seq[i];
-          std::cout << reply.id << " "
-                    << reply.name << " "
-                    << reply.value << std::endl;
+          std::cout << "📥 Received encrypted message: id=" << reply.id 
+                    << ", name=" << reply.name 
+                    << ", value=" << reply.value << std::endl;
         }
       }
       typed_reader_->return_loan(reply_seq, info_seq);
     }
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
   }
 }
+
 int main()
 {
-  Sub sub;
-  sub.handlMsg();
+  std::cout << "========================================" << std::endl;
+  std::cout << "🔒 RTI DDS Secure Subscriber" << std::endl;
+  std::cout << "========================================" << std::endl;
+  
+  try {
+    Sub sub;
+    std::cout << "🎧 Listening for secure messages..." << std::endl;
+    sub.handlMsg();
+  } catch (const std::exception& e) {
+    std::cerr << "❌ Error: " << e.what() << std::endl;
+    return 1;
+  }
+  
   return 0;
 }

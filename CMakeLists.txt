@@ -45,6 +45,8 @@ target_link_libraries(sub
     nddscore
     nddstransporttcp
     rticonnextmsgcpp
+    crypto              # OpenSSL crypto 库（用于证书处理）
+    ssl                 # OpenSSL SSL 库（用于 TLS）
     m 
     pthread
     rt
@@ -58,6 +60,8 @@ target_link_libraries(pub
     nddscore
     nddstransporttcp
     rticonnextmsgcpp
+    crypto              # OpenSSL crypto 库（用于证书处理）
+    ssl                 # OpenSSL SSL 库（用于 TLS）
     m 
     pthread
     rt

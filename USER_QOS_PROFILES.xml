@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dds xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:noNamespaceSchemaLocation="http://community.rti.com/schema/5.2.3/rti_dds_qos_profiles.xsd">
+    
+    <qos_library name="SecurityLibrary">
+        <!-- Publisher QoS Profile -->
+        <qos_profile name="PublisherSecurityProfile">
+        <participant_qos>
+            <!-- DDS Security 配置 -->
+            <property>
+                <value>
+                    <!-- 启用 DDS Security -->
+                    <element>
+                        <name>com.rti.serv.load_plugin</name>
+                        <value>com.rti.serv.secure</value>
+                    </element>
+                    
+                    <!-- Identity CA 证书 -->
+                    <element>
+                        <name>com.rti.serv.secure.authentication.ca_file</name>
+                        <value>tls/ca_cert.pem</value>
+                    </element>
+                    
+                    <!-- Publisher 身份证书 -->
+                    <element>
+                        <name>com.rti.serv.secure.authentication.certificate_file</name>
+                        <value>tls/pub_cert.pem</value>
+                    </element>
+                    
+                    <!-- Publisher 私钥 -->
+                    <element>
+                        <name>com.rti.serv.secure.authentication.private_key_file</name>
+                        <value>tls/pub_key.pem</value>
+                    </element>
+                    
+                    <!-- Permissions CA 证书 -->
+                    <element>
+                        <name>com.rti.serv.secure.access_control.permissions_authority_file</name>
+                        <value>tls/permissions_ca_cert.pem</value>
+                    </element>
+                    
+                    <!-- Governance 文档 -->
+                    <element>
+                        <name>com.rti.serv.secure.access_control.governance_file</name>
+                        <value>tls/governance.p7s</value>
+                    </element>
+                    
+                    <!-- Permissions 文档 -->
+                    <element>
+                        <name>com.rti.serv.secure.access_control.permissions_file</name>
+                        <value>tls/permissions.p7s</value>
+                    </element>
+                </value>
+            </property>
+        </participant_qos>
+        </qos_profile>
+        
+        <!-- Subscriber QoS Profile -->
+        <qos_profile name="SubscriberSecurityProfile">
+        <participant_qos>
+            <!-- DDS Security 配置 -->
+            <property>
+                <value>
+                    <!-- 启用 DDS Security -->
+                    <element>
+                        <name>com.rti.serv.load_plugin</name>
+                        <value>com.rti.serv.secure</value>
+                    </element>
+                    
+                    <!-- Identity CA 证书 -->
+                    <element>
+                        <name>com.rti.serv.secure.authentication.ca_file</name>
+                        <value>tls/ca_cert.pem</value>
+                    </element>
+                    
+                    <!-- Subscriber 身份证书 -->
+                    <element>
+                        <name>com.rti.serv.secure.authentication.certificate_file</name>
+                        <value>tls/sub_cert.pem</value>
+                    </element>
+                    
+                    <!-- Subscriber 私钥 -->
+                    <element>
+                        <name>com.rti.serv.secure.authentication.private_key_file</name>
+                        <value>tls/sub_key.pem</value>
+                    </element>
+                    
+                    <!-- Permissions CA 证书 -->
+                    <element>
+                        <name>com.rti.serv.secure.access_control.permissions_authority_file</name>
+                        <value>tls/permissions_ca_cert.pem</value>
+                    </element>
+                    
+                    <!-- Governance 文档 -->
+                    <element>
+                        <name>com.rti.serv.secure.access_control.governance_file</name>
+                        <value>tls/governance.p7s</value>
+                    </element>
+                    
+                    <!-- Permissions 文档 -->
+                    <element>
+                        <name>com.rti.serv.secure.access_control.permissions_file</name>
+                        <value>tls/permissions.p7s</value>
+                    </element>
+                </value>
+            </property>
+        </participant_qos>
+        </qos_profile>
+    </qos_library>
+</dds>
+
