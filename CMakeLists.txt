@@ -4,7 +4,7 @@ project(DateTypes_DDS)
 # 设置C++标准
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # 编译选项
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m64 -Wall -std=c++11 -Wno-deprecated-declarations")
@@ -53,8 +53,8 @@ target_link_libraries(NodeA
     dl
 )
 
-add_executable(NodeB NodeB.cxx)
-target_link_libraries(NodeB 
+add_executable(sub MainSub.cxx)
+target_link_libraries(sub 
     DateTypes_common
     nddstransporttcp
     nddscpp2
@@ -66,8 +66,8 @@ target_link_libraries(NodeB
     dl
 )
 
-add_executable(NodeC NodeC.cxx)
-target_link_libraries(NodeC 
+add_executable(pub MainPub.cxx)
+target_link_libraries(pub 
     DateTypes_common
     nddstransporttcp
     nddscpp2
@@ -91,7 +91,8 @@ target_link_libraries(Discover
     rt 
     dl
 )
+
 target_link_options(NodeA PRIVATE "-Wl,--no-as-needed")
-target_link_options(NodeB PRIVATE "-Wl,--no-as-needed")
-target_link_options(NodeC PRIVATE "-Wl,--no-as-needed")
+target_link_options(pub PRIVATE "-Wl,--no-as-needed")
+target_link_options(sub PRIVATE "-Wl,--no-as-needed")
 target_link_options(Discover PRIVATE "-Wl,--no-as-needed")

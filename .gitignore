@@ -6,3 +6,5 @@ thirdparty
 thirdparty/*
 .idea
 .idea/*
+.clangd
+compile_commands.json

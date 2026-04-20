@@ -64,6 +64,7 @@ bool Publisher::init(int domaimId)
   });
   participant_qos << discovery_props;
   #endif
+
   #ifdef SHM
   std::cout << "SHM" << std::endl;
   participant_qos << rti::core::policy::TransportBuiltin::Shmem();
@@ -74,10 +75,30 @@ bool Publisher::init(int domaimId)
     );
   participant_qos << shm_properties;
   #endif
+
   #ifdef UDP_V4
   std::cout << "UDP_V4" << std::endl;
   participant_qos << rti::core::policy::TransportBuiltin::UDPv4();
   #endif
+  
+  #ifdef UDP_V6
+  std::cout << "UDP_V6" << std::endl;
+  participant_qos << rti::core::policy::TransportBuiltin::UDPv6();
+
+  rti::core::policy::Property udpv6_props;
+  udpv6_props.set({
+    {"dds.transport.UDPv4.builtin.parent.allow_interfaces", ""},
+    {"dds.transport.UDPv6.builtin.parent.allow_interfaces", "ens33"}
+  });
+  participant_qos << udpv6_props;
+
+  // 必须把 Discovery 的对端和组播地址也改成 UDPv6，否则默认仍是 UDPv4
+  rti::core::policy::Discovery discovery_qos;
+  discovery_qos.initial_peers({"builtin.udpv6://ff02::80"});
+  discovery_qos.multicast_receive_addresses({"builtin.udpv6://ff02::80"});
+  participant_qos << discovery_qos;
+  #endif
+  
   #ifdef TCP_V4
   std::cout << "TCP_V4" << std::endl;
   participant_qos << rti::core::policy::TransportBuiltin::None();
@@ -87,7 +108,7 @@ bool Publisher::init(int domaimId)
     {"dds.transport.TCPv4.tcp1.library", "nddstransporttcp"},
     {"dds.transport.TCPv4.tcp1.create_function", "NDDS_Transport_TCPv4_create"},
     {"dds.transport.TCPv4.tcp1.parent.classid", "NDDS_TRANSPORT_CLASSID_TCPV4_LAN"},
-    {"dds.transport.TCPv4.tcp1.server_bind_port", "7401"},
+    {"dds.transport.TCPv4.tcp1.server_bind_port", "7400"},
   });
   /*export NDDS_DISCOVERY_PEERS="192.168.5.165:7400,192.168.5.165:7401"*/
   participant_qos << tcp_client_props;
